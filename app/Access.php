@@ -22,24 +22,22 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * Class Access
  * @package Clay
  *
- * @property string $id;
- * @property string $lock_id;
- * @property string $accessor_id;
- * @property string $access_type;
- * @property bool $is_completed;
- * @property bool $is_successful;
- * @property \stdClass|null $clp_response;
+ * @property string $id
+ * @property string $lock_id
+ * @property string $accessor_id
+ * @property string $access_type
+ * @property bool $is_completed
+ * @property bool $is_successful
+ * @property \stdClass|null $clp_response
  *
- * @property Carbon|null $created_at;
- * @property Carbon|null $updated_at;
- * @property Carbon|null $deleted_at;
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  *
  * @property Lock $lock;
  * @property Accessor $accessor;
  */
 class Access extends Model {
 
-	use SoftDeletes;
 
 	const LOCK = 'lock';
 	const UNLOCK = 'unlock';
@@ -62,6 +60,41 @@ class Access extends Model {
 		'is_successful' => 'boolean',
 		'clp_response' => 'object',
 	];
+
+	// ------------------------------------------------------------------------------------------------------------
+
+	public function lock() {
+		return $this->hasOne(Lock::class, 'id', 'lock_id');
+	}
+
+	public function accessor() {
+		return $this->hasOne(Accessor::class, 'id', 'accessor_id');
+	}
+
+	// ------------------------------------------------------------------------------------------------------------
+
+	/**
+	 * Called when the access request succeeds.
+	 * Changes the internal state of the lock.
+	 */
+	public function handleSuccess() {
+		$this->is_completed = true;
+		$this->is_successful = true;
+		$this->save();
+
+		$this->lock->handleStateChange($this);
+	}
+
+	/**
+	 * Called when the access request fails.
+	 */
+	public function handleFailure() {
+		$this->is_completed = true;
+		$this->is_successful = false;
+		$this->save();
+	}
+
+	// ------------------------------------------------------------------------------------------------------------
 
 	/**
 	 * Records an access attempt.

@@ -14,18 +14,26 @@
 namespace Clay\Jobs;
 
 
+use Clay\Access;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 final class ChangeLockStateOverCLP implements ShouldQueue {
 
+	/**
+	 * @var Access
+	 */
 	private $access;
 
-	public function __construct($access) {
+	public function __construct(Access $access) {
 		$this->access = $access;
 	}
 
 	public function handle() {
-		// @todo
+
+		// TODO: handle API request to CLP
+
+		$this->access->handleSuccess();
+
 	}
 
 }

@@ -25,6 +25,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *
  * @property string $id
  * @property string $name
+ * @property string $email
+ * @property string $password
+ * @property string $clp_id
+ *
  * @property Lock[]|Collection $allowedLocks
  *
  * @property Carbon|null $created_at
@@ -37,20 +41,25 @@ class Accessor extends Model {
 
 	protected $table = "accessors";
 	protected $fillable = [
-		'clp_id',
 		'name',
 
 		'email',
 		'password',
+
+		'clp_id',
 	];
 
 	protected $hidden = [
 		'password',
 	];
 
+	// ------------------------------------------------------------------------------------------------------------
+
 	public function allowedLocks() {
 		return $this->belongsToMany(Lock::class, 'lock_accessors');
 	}
+
+	// ------------------------------------------------------------------------------------------------------------
 
 	/**
 	 * Checks if the accessor is authorized to access a lock.
@@ -61,6 +70,13 @@ class Accessor extends Model {
 		return $this->allowedLocks()
 			->where('lock_id', $lock->id)
 			->exists();
+	}
+
+	/**
+	 * @return string
+	 */
+	public function __toString() {
+		return "Accessor #{$this->id} ({$this->email})";
 	}
 
 }

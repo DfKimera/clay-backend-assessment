@@ -31,6 +31,7 @@ use Illuminate\Support\Collection;
  * @property bool $is_locked
  * @property bool $is_busy
  * @property bool $allow_unlocking
+ * @property string $clp_id
  *
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -46,9 +47,12 @@ class Lock extends Model {
 	protected $fillable = [
 		'name',
 		'location',
+
 		'is_locked',
 		'is_busy',
 		'allow_unlocking',
+
+		'clp_id',
 	];
 
 	protected $casts = [
@@ -57,8 +61,45 @@ class Lock extends Model {
 		'is_busy' => 'boolean',
 	];
 
+	// ------------------------------------------------------------------------------------------------------------
+
 	public function authorizedAccessors() {
 		return $this->belongsToMany(Accessor::class, 'lock_accessors');
+	}
+
+	// ------------------------------------------------------------------------------------------------------------
+
+	/**
+	 * Is this lock locked?
+	 * @return bool
+	 */
+	public function isLocked() {
+		return $this->is_locked;
+	}
+
+	/**
+	 * Handles a change in the lock state.
+	 * @param Access $access
+	 */
+	public function handleStateChange(Access $access) : void {
+		$this->is_locked = ($access->access_type === Access::LOCK);
+		$this->save();
+	}
+
+	/**
+	 * Adds an accessor to the list of authorized accessors.
+	 * @param Accessor $accessor
+	 */
+	public function authorizeAccessor(Accessor $accessor) : void {
+		$this->authorizedAccessors()->syncWithoutDetaching([$accessor->id]);
+	}
+
+	/**
+	 * Removes an accessor from the list of authorized accessor, if they exist.
+	 * @param Accessor $accessor
+	 */
+	public function deauthorizeAccessor(Accessor $accessor) : void {
+		$this->authorizedAccessors()->detach([$accessor->id]);
 	}
 
 	/**
@@ -111,6 +152,13 @@ class Lock extends Model {
 
 		return $access;
 
+	}
+
+	/**
+	 * @return string
+	 */
+	public function __toString() {
+		return "Lock #{$this->id}";
 	}
 
 }
