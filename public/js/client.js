@@ -48886,6 +48886,10 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 //
 //
 //
+//
+//
+//
+//
 
 
 
@@ -49168,19 +49172,46 @@ var render = function() {
         _c(
           "div",
           { staticClass: "row" },
-          _vm._l(_vm.locks, function(lock) {
+          _vm._l(_vm.locks, function(lock, i) {
             return _c("div", { staticClass: "col-md-6" }, [
               _c("div", { staticClass: "card" }, [
-                _c("div", { staticClass: "card-body text-center" }, [
-                  _c("h4", [_vm._v(_vm._s(lock.name))]),
+                _c("div", { staticClass: "position-relative" }, [
+                  _c("div", {
+                    staticClass: "card-img",
+                    staticStyle: {
+                      width: "100%",
+                      height: "180px",
+                      "background-size": "cover"
+                    },
+                    style: {
+                      "background-image":
+                        "url('https://loremflickr.com/240/180/door?lock=" +
+                        i +
+                        "')"
+                    }
+                  }),
                   _vm._v(" "),
-                  _c("div", { staticClass: "py-2" }, [
-                    _vm._v(_vm._s(lock.location))
-                  ]),
-                  _vm._v(" "),
-                  !lock.is_locked ? _c("div", [_vm._m(0, true)]) : _vm._e(),
-                  _vm._v(" "),
-                  lock.is_locked ? _c("div", [_vm._m(1, true)]) : _vm._e()
+                  _c(
+                    "div",
+                    {
+                      staticClass: "card-img-overlay text-center text-white",
+                      staticStyle: {
+                        "background-color": "rgba(0,0,0,0.4)",
+                        "text-shadow": "1px 1px 1px rgba(0,0,0,0.35)"
+                      }
+                    },
+                    [
+                      _c("h4", [_vm._v(_vm._s(lock.name))]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "py-2" }, [
+                        _vm._v(_vm._s(lock.location))
+                      ]),
+                      _vm._v(" "),
+                      !lock.is_locked ? _c("div", [_vm._m(0, true)]) : _vm._e(),
+                      _vm._v(" "),
+                      lock.is_locked ? _c("div", [_vm._m(1, true)]) : _vm._e()
+                    ]
+                  )
                 ]),
                 _vm._v(" "),
                 _c("div", { staticClass: "card-footer" }, [
@@ -49248,7 +49279,9 @@ var render = function() {
                     ]
                   )
                 ])
-              ])
+              ]),
+              _vm._v(" "),
+              _c("br")
             ])
           })
         )

@@ -3,8 +3,19 @@
 use Faker\Generator as Faker;
 
 $factory->define(Clay\Lock::class, function (Faker $faker) {
+
+	$name = $faker->randomElement([
+		"{$faker->firstName}'s office",
+		ucfirst($faker->colorName) . ' meeting room',
+		ucfirst($faker->colorName) . ' room',
+		'Kitchen',
+		'Back door',
+		'Street gate',
+		'Street gate',
+	]);
+
 	return [
-		'name' => "{$faker->firstName}'s office",
+		'name' => $name,
 		'location' => $faker->company,
 		'is_locked' => false,
 		'allow_unlocking' => true,

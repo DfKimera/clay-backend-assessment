@@ -7,13 +7,16 @@
 
 			<div class="row">
 
-				<div class="col-md-6" v-for="lock in locks">
+				<div class="col-md-6" v-for="(lock, i) in locks">
 					<div class="card">
-						<div class="card-body text-center">
-							<h4>{{lock.name}}</h4>
-							<div class="py-2">{{lock.location}}</div>
-							<div v-if="!lock.is_locked"><strong class="text-success"><i class="fa fa-unlock"></i> Unlocked</strong></div>
-							<div v-if="lock.is_locked"><strong class="text-danger"><i class="fa fa-unlock"></i> Locked</strong></div>
+						<div class="position-relative">
+							<div class="card-img" style="width: 100%; height: 180px; background-size: cover;" :style="{'background-image': 'url(\'https://loremflickr.com/240/180/door?lock=' + i + '\')'}"></div>
+							<div class="card-img-overlay text-center text-white" style="background-color: rgba(0,0,0,0.4); text-shadow: 1px 1px 1px rgba(0,0,0,0.35)">
+								<h4>{{lock.name}}</h4>
+								<div class="py-2">{{lock.location}}</div>
+								<div v-if="!lock.is_locked"><strong class="text-success"><i class="fa fa-unlock"></i> Unlocked</strong></div>
+								<div v-if="lock.is_locked"><strong class="text-danger"><i class="fa fa-unlock"></i> Locked</strong></div>
+							</div>
 						</div>
 						<div class="card-footer">
 							<div class="btn-group btn-group-justified" role="group">
@@ -23,6 +26,7 @@
 							</div>
 						</div>
 					</div>
+					<br />
 				</div>
 
 			</div>
