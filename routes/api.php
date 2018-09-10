@@ -13,6 +13,17 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group([], function() {
+	Route::post('/auth', 'API\AuthController@authenticate')->name('api.auth.token');
+});
+
+Route::group(['middleware' => 'auth:api'], function() {
+
+	Route::get('/me', 'API\AuthController@identity')->name('api.auth.identity');
+
+
+	Route::get('/locks', 'API\LocksController@index')->name('api.locks.index');
+	Route::get('/locks/{lock}', 'API\LocksController@show')->name('api.locks.show');
+	Route::put('/locks/{lock}', 'API\LocksController@update')->name('api.locks.update');
+
 });
