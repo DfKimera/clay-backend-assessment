@@ -42,3 +42,20 @@ There are many things I would improve/change with more time:
 - Improve test coverage of edge cases
 - Redesign the `Access` object (or maybe have a different object) to keep track of failed lock/unlock attempts (though these shouldn't be normally possible in the actual UI)
 - Add test coverage for the admin panel (using Laravel Dusk)
+
+
+## How to install and run locally
+- Clone the repo from GitHub
+- Install composer dependencies with `composer install`
+- Configure the environment by copying `.env.example` into `.env`, and updating the setings
+- Run `php artisan app:key` to generate the `APP_KEY`
+- Run `php artisan jwt:secret` to generate the `JWT_SECRET`
+- Run `php artisan migrate` to create the tables
+- Run `php artisan maintenance:create_admin` to create admin users
+- Run `php artisan db:seed` to seed the database with test data
+
+## To develop / test locally
+- Make sure to install composer dev dependencies
+- Run tests with `phpunit` and the `phpunit.xml` config
+- Run `npm install` to install front-end deps
+- Run `npm run watch` to start the frontend asset pipeline
