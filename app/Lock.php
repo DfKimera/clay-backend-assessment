@@ -103,6 +103,26 @@ class Lock extends Model {
 	}
 
 	/**
+	 * Updates the list of accessors allowed to access this lock.
+	 * Will remove accessors not in the list of given IDs, and add the ones that are new.
+	 * @param array $accessorIDs An array of accessor IDs allowed to access.
+	 */
+	public function syncAuthorizedAccessors(array $accessorIDs) : void {
+		$this->authorizedAccessors()->sync($accessorIDs);
+	}
+
+	/**
+	 * Gets a list of accessor IDs that are authorized to access this lock.
+	 * @return array
+	 */
+	public function getAllowedAccessorIDs() : array {
+		return $this->authorizedAccessors()
+			->get(['accessor_id'])
+			->pluck('accessor_id')
+			->toArray();
+	}
+
+	/**
 	 * Flags this lock as busy.
 	 * Busy means there's an ongoing access operation waiting to complete.
 	 */

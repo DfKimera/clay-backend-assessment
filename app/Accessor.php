@@ -15,9 +15,14 @@ namespace Clay;
 
 
 use Carbon\Carbon;
+use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
+use Illuminate\Foundation\Auth\Access\Authorizable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
 /**
  * Class Accessor
@@ -35,9 +40,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  */
-class Accessor extends Model {
+class Accessor extends Model implements AuthenticatableContract, AuthorizableContract, JWTSubject  {
 
 	use SoftDeletes;
+	use Authenticatable;
+	use Authorizable;
 
 	protected $table = "accessors";
 	protected $fillable = [
@@ -79,4 +86,21 @@ class Accessor extends Model {
 		return "Accessor #{$this->id} ({$this->email})";
 	}
 
+	/**
+	 * Get the identifier that will be stored in the subject claim of the JWT.
+	 *
+	 * @return mixed
+	 */
+	public function getJWTIdentifier() {
+		return $this->id;
+	}
+
+	/**
+	 * Return a key value array, containing any custom claims to be added to the JWT.
+	 *
+	 * @return array
+	 */
+	public function getJWTCustomClaims() {
+		return [];
+	}
 }

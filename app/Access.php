@@ -15,6 +15,7 @@ namespace Clay;
 
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -64,11 +65,11 @@ class Access extends Model {
 	// ------------------------------------------------------------------------------------------------------------
 
 	public function lock() {
-		return $this->hasOne(Lock::class, 'id', 'lock_id');
+		return $this->hasOne(Lock::class, 'id', 'lock_id')->withTrashed();
 	}
 
 	public function accessor() {
-		return $this->hasOne(Accessor::class, 'id', 'accessor_id');
+		return $this->hasOne(Accessor::class, 'id', 'accessor_id')->withTrashed();
 	}
 
 	// ------------------------------------------------------------------------------------------------------------
@@ -122,6 +123,21 @@ class Access extends Model {
 		$access->save();
 
 		return $access;
+	}
+
+	/**
+	 * Fetches the last succesfull access events.
+	 * @param int $count
+	 * @return Access[]|Collection
+	 */
+	public static function fetchRecentSuccesfullAccesses(int $count = 12) {
+		return self::query()
+			->with(['accessor', 'lock'])
+			->where('is_completed', true)
+			->where('is_successful', true)
+			->orderBy('created_at', 'desc')
+			->take($count)
+			->get();
 	}
 
 }

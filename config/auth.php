@@ -42,8 +42,8 @@ return [
         ],
 
         'api' => [
-            'driver' => 'token',
-            'provider' => 'users',
+            'driver' => 'jwt',
+            'provider' => 'accessors',
         ],
     ],
 
@@ -70,10 +70,10 @@ return [
             'model' => Clay\User::class,
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'accessors' => [
+            'driver' => 'eloquent',
+            'model' => Clay\Accessor::class,
+        ],
     ],
 
     /*
