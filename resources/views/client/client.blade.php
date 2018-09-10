@@ -10,10 +10,10 @@
 
 		<link rel="icon" href="/favicon.ico">
 
-		<title>Clay - Backend Assessment Admin</title>
+		<title>Clay - Backend Assessment Client</title>
 
+		<link rel="stylesheet" href="{{asset('css/client.css')}}" />
 		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous" />
-		<link rel="stylesheet" href="{{asset('css/admin.css')}}" />
 
 		@stack('head')
 
@@ -23,28 +23,16 @@
 
 		<div id="app">
 
-			@include('admin.topbar')
-
-			<div class="container-fluid">
-				<div class="row">
-
-					@auth
-						@include('admin.sidebar')
-					@endauth
-
-					<main role="main"
-					      @auth class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4" @endauth
-					      @guest class="col-12 pt-3 px-4" @endguest
-					>
-						@include('components.alert')
-						@yield('main')
+			<div class="container">
+				<div class="row justify-content-center py-4">
+					<main role="main" class="col-md-6">
+						<app></app>
 					</main>
-
 				</div>
 			</div>
 		</div>
 
-		<script src="{{asset('js/admin.js')}}"></script>
+		<script src="{{asset('js/client.js')}}"></script>
 
 		@stack('scripts')
 

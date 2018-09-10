@@ -19,6 +19,7 @@ use Clay\Accessor;
 use Clay\Exceptions\NotAllowedException;
 use Clay\Jobs\ChangeLockStateOverCLP;
 use Clay\Lock;
+use Clay\Services\AccessService;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
 
@@ -30,19 +31,17 @@ class LockTest extends TestCase {
 
 		$accessor = factory(Accessor::class)->create(); /* @var $accessor Accessor */
 		$lock = factory(Lock::class)->state('locked')->create(); /* @var $lock Lock */
+		$service = app()->make(AccessService::class);
 
 		$this->assertTrue($lock->isLocked());
 		$this->assertFalse($accessor->canAccessLock($lock));
 
-		$lock->authorizeAccessor($accessor);
+		$lock->authorize($accessor);
 
 		$this->assertTrue($accessor->canAccessLock($lock));
 
-		$this->expectsJobs(ChangeLockStateOverCLP::class);
+		$access = $lock->attemptAccess($service, Access::UNLOCK, $accessor);
 
-		$access = $lock->attemptAccess(Access::UNLOCK, $accessor);
-
-		$access->handleSuccess();
 		$lock->refresh();
 
 		$this->assertFalse($lock->isLocked());
@@ -53,13 +52,14 @@ class LockTest extends TestCase {
 
 		$accessor = factory(Accessor::class)->create(); /* @var $accessor Accessor */
 		$lock = factory(Lock::class)->state('locked')->create(); /* @var $lock Lock */
+		$service = app()->make(AccessService::class);
 
 		$this->assertTrue($lock->isLocked());
 		$this->assertFalse($accessor->canAccessLock($lock));
 
 		$this->expectException(NotAllowedException::class);
 
-		$lock->attemptAccess(Access::UNLOCK, $accessor);
+		$lock->attemptAccess($service, Access::UNLOCK, $accessor);
 
 		$this->assertTrue($lock->isLocked());
 
@@ -69,17 +69,16 @@ class LockTest extends TestCase {
 
 		$accessor = factory(Accessor::class)->create(); /* @var $accessor Accessor */
 		$lock = factory(Lock::class)->state('unlocked')->create(); /* @var $lock Lock */
+		$service = app()->make(AccessService::class);
 
 		$this->assertFalse($lock->isLocked());
 		$this->assertFalse($accessor->canAccessLock($lock));
 
-		$lock->authorizeAccessor($accessor);
+		$lock->authorize($accessor);
 
 		$this->assertTrue($accessor->canAccessLock($lock));
 
-		$this->expectsJobs(ChangeLockStateOverCLP::class);
-
-		$access = $lock->attemptAccess(Access::LOCK, $accessor);
+		$access = $lock->attemptAccess($service, Access::LOCK, $accessor);
 
 		$access->handleSuccess();
 		$lock->refresh();
@@ -92,13 +91,14 @@ class LockTest extends TestCase {
 
 		$accessor = factory(Accessor::class)->create(); /* @var $accessor Accessor */
 		$lock = factory(Lock::class)->state('unlocked')->create(); /* @var $lock Lock */
+		$service = app()->make(AccessService::class);
 
 		$this->assertFalse($lock->isLocked());
 		$this->assertFalse($accessor->canAccessLock($lock));
 
 		$this->expectException(NotAllowedException::class);
 
-		$lock->attemptAccess(Access::LOCK, $accessor);
+		$lock->attemptAccess($service, Access::LOCK, $accessor);
 
 		$this->assertFalse($lock->isLocked());
 
@@ -107,15 +107,16 @@ class LockTest extends TestCase {
 	public function test_invalid_attempt_access() {
 		$accessor = factory(Accessor::class)->create(); /* @var $accessor Accessor */
 		$lock = factory(Lock::class)->state('locked')->create(); /* @var $lock Lock */
+		$service = app()->make(AccessService::class);
 
 		$this->assertTrue($lock->isLocked());
 		$this->assertFalse($accessor->canAccessLock($lock));
 
-		$lock->authorizeAccessor($accessor);
+		$lock->authorize($accessor);
 
 		$this->expectException(\InvalidArgumentException::class);
 
-		$lock->attemptAccess('open', $accessor);
+		$lock->attemptAccess($service, 'open', $accessor);
 
 		$this->assertTrue($lock->isLocked());
 	}

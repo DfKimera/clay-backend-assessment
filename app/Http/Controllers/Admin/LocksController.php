@@ -51,7 +51,7 @@ class LocksController extends Controller {
 	public function update_authorized_accessors(Lock $lock) {
 
 		$accessorIDs = (array) request('accessor_ids', []);
-		$lock->syncAuthorizedAccessors($accessorIDs);
+		$lock->syncAccessors($accessorIDs);
 
 		return redirect()->route('admin.locks.edit', [$lock->id]);
 	}

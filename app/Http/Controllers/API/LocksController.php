@@ -17,6 +17,7 @@ use Clay\Accessor;
 use Clay\Exceptions\LockIsBusyException;
 use Clay\Exceptions\NotAllowedException;
 use Clay\Lock;
+use Clay\Services\AccessService;
 
 class LocksController extends APIController {
 
@@ -31,25 +32,28 @@ class LocksController extends APIController {
 	}
 
 	public function show(Lock $lock) {
+
+		$maxEntries = max(intval(request('max', 24)), 64);
+		$activity = $lock->getAccessActivity($maxEntries);
+
 		return $this->response([
 			'lock' => $lock,
+			'activity' => $activity,
 		]);
 	}
 
-	public function update(Lock $lock) {
+	public function update(Lock $lock, AccessService $service) {
 		$accessor = auth()->guard('api')->user(); /* @var $accessor Accessor */
 
 		try {
 
 			$accessType = request('access_type', '');
-			$access = $lock->attemptAccess($accessType, $accessor);
+			$access = $lock->attemptAccess($service, $accessType, $accessor);
 
 			return $this->response(['access_id' => $access->id]);
 
 		} catch (NotAllowedException $ex) {
 			return $this->notAllowed();
-		} catch (LockIsBusyException $ex) {
-			return $this->failedWithException('lock_is_busy', 503, $ex);
 		} catch (\InvalidArgumentException $ex) {
 			return $this->failedWithException('invalid_parameters', 422, $ex);
 		} catch (\Exception $ex) {

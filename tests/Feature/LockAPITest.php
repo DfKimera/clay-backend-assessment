@@ -52,10 +52,10 @@ class LockAPITest extends TestCase {
 		$this->otherAccessor = factory(Accessor::class)->create();
 
 		$this->unlockedLock = factory(Lock::class)->state('unlocked')->create();
-		$this->unlockedLock->authorizeAccessor($this->accessor);
+		$this->unlockedLock->authorize($this->accessor);
 
 		$this->lockedLock = factory(Lock::class)->state('locked')->create();
-		$this->lockedLock->authorizeAccessor($this->accessor);
+		$this->lockedLock->authorize($this->accessor);
 	}
 
 	public function test_can_list_locks() {
@@ -77,8 +77,6 @@ class LockAPITest extends TestCase {
 	}
 
 	public function test_can_lock_a_lock() {
-
-		$this->expectsJobs(ChangeLockStateOverCLP::class);
 
 		$this->assertFalse($this->unlockedLock->isLocked());
 
@@ -108,8 +106,6 @@ class LockAPITest extends TestCase {
 
 	public function test_can_unlock_a_lock() {
 
-		$this->expectsJobs(ChangeLockStateOverCLP::class);
-
 		$this->assertTrue($this->lockedLock->isLocked());
 
 		$response = $this
@@ -127,8 +123,6 @@ class LockAPITest extends TestCase {
 
 		$access = Access::find($accessID); /* @var $access Access */
 		$this->assertNotNull($accessID);
-
-		$access->handleSuccess();
 
 		$this->lockedLock->refresh();
 
@@ -152,8 +146,6 @@ class LockAPITest extends TestCase {
 		$response->assertJsonStructure(['status', 'reason']);
 
 		$response->assertJson(['reason' => 'not_allowed']);
-
-		$this->doesntExpectJobs(ChangeLockStateOverCLP::class);
 
 		$this->assertTrue($this->lockedLock->isLocked());
 

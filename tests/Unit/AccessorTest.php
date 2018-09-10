@@ -36,7 +36,7 @@ class AccessorTest extends TestCase {
 
 		$this->assertFalse($accessor->canAccessLock($lock));
 
-		$lock->authorizeAccessor($accessor);
+		$lock->authorize($accessor);
 
 		$this->assertTrue($accessor->canAccessLock($lock));
 	}

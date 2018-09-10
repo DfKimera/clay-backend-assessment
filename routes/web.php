@@ -13,10 +13,7 @@
 
 Route::group([], function () {
 
-	Route::get('/', function() {
-		if(auth()->guest()) return redirect()->route('auth.index');
-		return redirect()->route('admin.dashboard');
-	});
+	Route::get('/', 'Client\ClientController@index');
 
     Route::get('/login', 'Admin\AuthController@index')->name('auth.index');
     Route::post('/login', 'Admin\AuthController@login')->name('auth.login');

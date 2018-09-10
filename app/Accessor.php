@@ -80,6 +80,15 @@ class Accessor extends Model implements AuthenticatableContract, AuthorizableCon
 	}
 
 	/**
+	 * Sets the password for the user.
+	 * Does not persist. Calculates the password hash.
+	 * @param string $password
+	 */
+	public function setPassword(string $password) : void {
+		$this->password = password_hash($password, PASSWORD_DEFAULT);
+	}
+
+	/**
 	 * @return string
 	 */
 	public function __toString() {

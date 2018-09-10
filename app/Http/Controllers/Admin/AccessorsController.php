@@ -39,6 +39,11 @@ class AccessorsController extends Controller {
 		}
 
 		$accessor->fill(request()->all());
+
+		if(request()->has('password')) {
+			$accessor->setPassword(request('password'));
+		}
+
 		$accessor->save();
 
 		return redirect()->route('admin.accessors.edit', [$accessor->id]);

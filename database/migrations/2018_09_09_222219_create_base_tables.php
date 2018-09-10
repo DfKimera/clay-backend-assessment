@@ -33,7 +33,6 @@ class CreateBaseTables extends Migration
         	$table->string('location')->nullable();
 
         	$table->boolean('is_locked')->default(false)->index();
-        	$table->boolean('is_busy')->default(false)->index();
         	$table->boolean('allow_unlocking')->default(false)->index();
 
         	$table->string('clp_id')->index();
